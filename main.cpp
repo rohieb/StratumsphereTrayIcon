@@ -98,16 +98,20 @@ void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
   nr->deleteLater();
 
   // set up and show the system tray icon
+  QString statusText;
+  QIcon * icon;
   if(status_ == StratumsphereTrayIcon::CLOSED) {
-    trayIcon_->setIcon(closedIcon_);
-    statusAction_->setText(tr("Space is closed"));
+    icon = &closedIcon_;
+    statusText = tr("Space is closed");
   } else if(status_ == StratumsphereTrayIcon::OPEN) {
-    trayIcon_->setIcon(openIcon_);
-    statusAction_->setText(tr("Space is open"));
+    icon = &openIcon_;
+    statusText = tr("Space is open");
   } else {
-    trayIcon_->setIcon(undefinedIcon_);
-    statusAction_->setText(tr("Could not determine space status"));
+    icon = &undefinedIcon_;
+    statusText = tr("Could not determine space status");
   }
+  trayIcon_->setIcon(*icon);
+  trayIcon_->setToolTip(statusText);
 }
 
 /******************************************************************************/
