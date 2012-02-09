@@ -1,0 +1,13 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>res/open-16.png</file>
+  <file>res/open-22.png</file>
+  <file>res/open-32.png</file>
+  <file>res/closed-16.png</file>
+  <file>res/closed-22.png</file>
+  <file>res/closed-32.png</file>
+  <file>res/undefined-16.png</file>
+  <file>res/undefined-22.png</file>
+  <file>res/undefined-32.png</file>
+</qresource>
+</RCC>

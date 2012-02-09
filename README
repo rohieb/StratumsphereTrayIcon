@@ -1,0 +1,17 @@
+An application to show the opening status of the Stratum 0 hackerspace in the
+system tray icon.
+
+Dependencies:
+ * Qt > 4.2 (http://qt.nokia.com)
+ * A C++ build system (GCC/GNU make or MS Visual C++ Express will do)
+
+Compiling:
+  qmake main.pro && make
+or, if you are using MS Visual :
+  qmake main.pro && nmake
+
+Windows compatibility has not yet been tested though.
+
+Bugs:
+* Currently, the status is only fetched once at startup.
+
