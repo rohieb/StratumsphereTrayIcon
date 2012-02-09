@@ -31,6 +31,7 @@
 #include <QUrl>
 #include <QNetworkRequest>
 #include <QDebug>
+#include <QTextCodec>
 
 StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   trayMenu_(0), trayIcon_(0), status_(UNDEFINED) {
@@ -48,11 +49,21 @@ StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
 
   // set up menu
   trayMenu_ = new QMenu;
+  statusAction_ = new QAction(trayMenu_);
+  statusAction_->setEnabled(false);
   QAction * exitAction = new QAction(tr("&Exit"), trayMenu_);
   connect(exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+  trayMenu_->addAction(statusAction_);
   trayMenu_->addAction(exitAction);
 
+  // set up tray icon
+  trayIcon_ = new QSystemTrayIcon(this);
+  trayIcon_->setContextMenu(trayMenu_);
+  trayIcon_->setIcon(undefinedIcon_);
+  trayIcon_->show();
+
   qDebug() << "looking for status";
+  statusAction_->setText(tr("Updating…"));
   nam_->get(QNetworkRequest(QUrl("http://rohieb.name/stratum0/status.txt")));
 }
 
@@ -65,18 +76,18 @@ StratumsphereTrayIcon::~StratumsphereTrayIcon() {
 void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
   qDebug() << "got a reply!";
   QStringList lines = QString(nr->readAll()).split('\n');
-  foreach(const QString& line, lines) {
-    qDebug() << "got line: " << line.trimmed();
+  foreach(const QString& l, lines) {
+    QString line = l.trimmed();
+    qDebug() << "got line: " << line;
     if(line.startsWith("IsOpen:")) {
-      qDebug() << "found line: " << line.trimmed();
+      qDebug() << "found line: " << line;
       QString boolPart = line.section(':', 1).trimmed();
       if(boolPart.toLower() == "true") {
         status_ = OPEN;
       } else if(boolPart.toLower() == "false") {
         status_ = CLOSED;
       } else {
-        qDebug() << "Oops, I don't know how to interpret that line: " <<
-          line.trimmed();
+        qDebug() << "Oops, I don't know how to interpret that line: " << line;
         status_ = UNDEFINED;
       }
       qDebug() << "status is " << status_;
@@ -87,17 +98,25 @@ void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
   nr->deleteLater();
 
   // set up and show the system tray icon
-  trayIcon_ = new QSystemTrayIcon(this);
-  trayIcon_->setIcon((status_ == StratumsphereTrayIcon::UNDEFINED) ?
-    undefinedIcon_ : (status_ == StratumsphereTrayIcon::OPEN) ?
-    openIcon_ : closedIcon_);
-  trayIcon_->setContextMenu(trayMenu_);
-  trayIcon_->show();
+  if(status_ == StratumsphereTrayIcon::CLOSED) {
+    trayIcon_->setIcon(closedIcon_);
+    statusAction_->setText(tr("Space is closed"));
+  } else if(status_ == StratumsphereTrayIcon::OPEN) {
+    trayIcon_->setIcon(openIcon_);
+    statusAction_->setText(tr("Space is open"));
+  } else {
+    trayIcon_->setIcon(undefinedIcon_);
+    statusAction_->setText(tr("Could not determine space status"));
+  }
 }
 
+/******************************************************************************/
+/* main function                                                              */
+/******************************************************************************/
 
 int main(int argc, char * argv[]) {
   QApplication app(argc, argv);
+  QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
   StratumsphereTrayIcon * sti = new StratumsphereTrayIcon;
 
   int ret = app.exec();

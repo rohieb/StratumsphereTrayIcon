@@ -33,6 +33,7 @@ class StratumsphereTrayIcon : public QObject {
   Q_OBJECT
   QNetworkAccessManager * nam_;
   QMenu * trayMenu_;
+  QAction * statusAction_;
   QSystemTrayIcon * trayIcon_;
 
   QIcon openIcon_;
