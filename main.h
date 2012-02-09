@@ -33,7 +33,7 @@ class StratumsphereTrayIcon : public QObject {
   Q_OBJECT
   QNetworkAccessManager * nam_;
   QMenu * trayMenu_;
-  QAction * statusAction_;
+  QAction * updateAction_;
   QSystemTrayIcon * trayIcon_;
 
   QIcon openIcon_;
@@ -41,6 +41,11 @@ class StratumsphereTrayIcon : public QObject {
   QIcon undefinedIcon_;
 
   QDateTime lastUpdate_;
+
+  /** update interval in seconds */
+  const static int updateInterval_ = 5*60;
+  /** timeout interval in seconds */
+  const static int timeoutInterval_ = 60;
 
   // inherited from QObject
   inline virtual void timerEvent(QTimerEvent *) {
@@ -53,9 +58,11 @@ public:
   
   StratumsphereTrayIcon();
   virtual ~StratumsphereTrayIcon();
-  void updateStatus();
 
 public slots:
+  void updateStatus();
+protected slots:
   void reply(QNetworkReply*);
+  void refresh();
 };
 

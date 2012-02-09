@@ -32,7 +32,11 @@
 #include <QNetworkRequest>
 #include <QDebug>
 #include <QTextCodec>
+#include <QTimer>
 
+/**
+ * Constructive constructor takes no parameters.
+ */
 StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   trayMenu_(0), trayIcon_(0), status_(UNDEFINED) {
   nam_ = new QNetworkAccessManager(this);
@@ -49,11 +53,12 @@ StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
 
   // set up menu
   trayMenu_ = new QMenu;
-  statusAction_ = new QAction(trayMenu_);
-  statusAction_->setEnabled(false);
+  updateAction_ = new QAction(tr("&Update status"), trayMenu_);
+  connect(updateAction_, SIGNAL(triggered()), this, SLOT(updateStatus()));
+  trayMenu_->addAction(updateAction_);
+
   QAction * exitAction = new QAction(tr("&Exit"), trayMenu_);
   connect(exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
-  trayMenu_->addAction(statusAction_);
   trayMenu_->addAction(exitAction);
 
   // set up tray icon
@@ -62,51 +67,73 @@ StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   trayIcon_->setIcon(undefinedIcon_);
   trayIcon_->show();
 
-  // fire up a timer to poll the status every 5 minutes
-  startTimer(5*60*1000);
+  // fire up a timer to poll the status every n minutes
+  startTimer(updateInterval_ * 1000);
 
   updateStatus();
 }
 
-void StratumsphereTrayIcon::updateStatus() {
-  qDebug() << QDateTime::currentDateTime().toString() << "update status";
-  statusAction_->setText(tr("Updating…"));
-  nam_->get(QNetworkRequest(QUrl("http://rohieb.name/stratum0/status.txt")));
-}
-
+/**
+ * Destructive destructor is destructive.
+ */
 StratumsphereTrayIcon::~StratumsphereTrayIcon() {
   if(trayMenu_) {
     delete trayMenu_;
   }
 }
 
+/**
+ * Update the Stratum 0 opening status and the tray icon
+ */
+void StratumsphereTrayIcon::updateStatus() {
+  qDebug() << QDateTime::currentDateTime().toString() << "updating status";
+  updateAction_->setText(tr("Updating…"));
+  updateAction_->setEnabled(false);
+  nam_->get(QNetworkRequest(QUrl("http://rohieb.name/stratum0/status.txt")));
+
+  // after timeout, just update icon to unspecified state
+  status_ = UNDEFINED;
+  QTimer::singleShot(timeoutInterval_ * 1000, this, SLOT(refresh()));
+}
+
+/**
+ * Process network reply and update status settings
+ */
 void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
   qDebug() << "got a reply!";
-  lastUpdate_ = QDateTime::currentDateTime();
 
   QStringList lines = QString(nr->readAll()).split('\n');
   foreach(const QString& l, lines) {
     QString line = l.trimmed();
-    qDebug() << "got line: " << line;
+    qDebug() << "parsing line:" << line;
     if(line.startsWith("IsOpen:")) {
-      qDebug() << "found line: " << line;
       QString boolPart = line.section(':', 1).trimmed();
       if(boolPart.toLower() == "true") {
         status_ = OPEN;
+        qDebug() << "space is open";
       } else if(boolPart.toLower() == "false") {
         status_ = CLOSED;
+        qDebug() << "space is open";
       } else {
-        qDebug() << "Oops, I don't know how to interpret that line: " << line;
+        qDebug() << "Oops, I don't know how to interpret that line:" << line;
         status_ = UNDEFINED;
       }
-      qDebug() << "status is " << status_;
-    } else {
-      qDebug() << "discard line";
+      lastUpdate_ = QDateTime::currentDateTime();
+      qDebug() << "status is" << status_;
     }
   }
   nr->deleteLater();
+  refresh();
+};
 
-  // set up and show the system tray icon
+/**
+ * Refresh the icon, the context menu and the tooltip text
+ */
+void StratumsphereTrayIcon::refresh() {
+  qDebug() << "refreshing tray icon";
+  updateAction_->setEnabled(true);
+  updateAction_->setText(tr("&Update status"));
+
   QString statusText;
   QIcon * icon;
   if(status_ == StratumsphereTrayIcon::CLOSED) {
@@ -117,7 +144,7 @@ void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
     statusText = tr("Space is open");
   } else {
     icon = &undefinedIcon_;
-    statusText = tr("Could not determine space status");
+    statusText = tr("Could not determine opening status");
   }
   trayIcon_->setIcon(*icon);
 
