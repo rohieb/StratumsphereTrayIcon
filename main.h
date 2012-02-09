@@ -27,7 +27,7 @@
 #include <QSystemTrayIcon>
 #include <QIcon>
 #include <QMenu>
-//#include <QAction>
+#include <QDateTime>
 
 class StratumsphereTrayIcon : public QObject {
   Q_OBJECT
@@ -40,12 +40,20 @@ class StratumsphereTrayIcon : public QObject {
   QIcon closedIcon_;
   QIcon undefinedIcon_;
 
+  QDateTime lastUpdate_;
+
+  // inherited from QObject
+  inline virtual void timerEvent(QTimerEvent *) {
+    updateStatus();
+  }
+
 public:
   enum Status { UNDEFINED = 0, OPEN, CLOSED };
   Status status_;
   
   StratumsphereTrayIcon();
   virtual ~StratumsphereTrayIcon();
+  void updateStatus();
 
 public slots:
   void reply(QNetworkReply*);

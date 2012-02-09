@@ -62,7 +62,14 @@ StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   trayIcon_->setIcon(undefinedIcon_);
   trayIcon_->show();
 
-  qDebug() << "looking for status";
+  // fire up a timer to poll the status every 5 minutes
+  startTimer(5*60*1000);
+
+  updateStatus();
+}
+
+void StratumsphereTrayIcon::updateStatus() {
+  qDebug() << QDateTime::currentDateTime().toString() << "update status";
   statusAction_->setText(tr("Updating…"));
   nam_->get(QNetworkRequest(QUrl("http://rohieb.name/stratum0/status.txt")));
 }
@@ -75,6 +82,8 @@ StratumsphereTrayIcon::~StratumsphereTrayIcon() {
 
 void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
   qDebug() << "got a reply!";
+  lastUpdate_ = QDateTime::currentDateTime();
+
   QStringList lines = QString(nr->readAll()).split('\n');
   foreach(const QString& l, lines) {
     QString line = l.trimmed();
@@ -111,6 +120,10 @@ void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
     statusText = tr("Could not determine space status");
   }
   trayIcon_->setIcon(*icon);
+
+  statusText.append("\n");
+  statusText.append(tr("Last update: "));
+  statusText.append(lastUpdate_.toString(Qt::SystemLocaleShortDate));
   trayIcon_->setToolTip(statusText);
 }
 
