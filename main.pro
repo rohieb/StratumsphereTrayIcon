@@ -8,4 +8,7 @@ QT = core \
 SOURCES = main.cpp
 HEADERS += main.h
 RESOURCES = resources.qrc
+win32 {
+  RC_FILE = s0trayicon.rc
+}
 
