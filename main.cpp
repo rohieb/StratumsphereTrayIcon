@@ -44,7 +44,7 @@ StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
     SLOT(reply(QNetworkReply*)));
 
   // set up icons
-  char sizes[] = {16, 22, 32};
+  char sizes[] = {16, 22, 32, 64, 128, 256};
   for(unsigned char size = 0, i = 0; i < sizeof(sizes); size = sizes[i], i++) {
     openIcon_.addFile(QString(":/res/open-%1.png").arg(size));
     closedIcon_.addFile(QString(":/res/closed-%1.png").arg(size));
@@ -147,6 +147,7 @@ void StratumsphereTrayIcon::refresh() {
     statusText = tr("Could not determine opening status");
   }
   trayIcon_->setIcon(*icon);
+  qApp->setWindowIcon(*icon);
 
   statusText.append("\n");
   statusText.append(tr("Last update: "));
