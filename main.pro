@@ -13,6 +13,9 @@ win32 {
   RC_FILE = s0trayicon.rc
 }
 
+macx {
+  ICON = res/s0trayicon.icns
+}
 macx:universal {
   CONFIG += x86 ppc
 }
