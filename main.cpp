@@ -147,6 +147,7 @@ void StratumsphereTrayIcon::refresh() {
     statusText = tr("Could not determine opening status");
   }
   trayIcon_->setIcon(*icon);
+  qApp->setWindowIcon(*icon);
 
   statusText.append("\n");
   statusText.append(tr("Last update: "));
