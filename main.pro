@@ -16,3 +16,9 @@ win32 {
 macx:universal {
   CONFIG += x86 ppc
 }
+macx:noicon {
+  QMAKE_INFO_PLIST = Info-noicon.plist
+}
+macx:!noicon {
+  QMAKE_INFO_PLIST = Info-icon.plist
+}
