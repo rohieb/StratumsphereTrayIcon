@@ -1,6 +1,7 @@
 TEMPLATE = app
 CONFIG += debug_and_release \
-  ordered
+  ordered \
+  silent
 TARGET = s0trayicon
 QT = core \
   network \
