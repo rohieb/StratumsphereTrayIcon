@@ -121,6 +121,15 @@ void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
       lastUpdate_ = QDateTime::currentDateTime();
       qDebug() << "status is" << status_;
     }
+    if(line.startsWith("Since:")) {
+      QDateTime dt = QDateTime::fromString(line.section(':', 1).trimmed(),
+        Qt::ISODate);
+      if(!dt.isValid()) {
+        qDebug() << "Oops, I don't know how to interpret that line:" << line;
+      } else {
+        since_ = dt;
+      }
+    }
   }
   nr->deleteLater();
   refresh();
@@ -150,8 +159,11 @@ void StratumsphereTrayIcon::refresh() {
   qApp->setWindowIcon(*icon);
 
   statusText.append("\n");
-  statusText.append(tr("Last update: "));
-  statusText.append(lastUpdate_.toString(Qt::SystemLocaleShortDate));
+  statusText.append(tr("Open since: %1").
+    arg(since_.toString(Qt::DefaultLocaleShortDate)));
+  statusText.append("\n");
+  statusText.append(tr("Last update: %1").
+    arg(lastUpdate_.toString(Qt::DefaultLocaleShortDate)));
   trayIcon_->setToolTip(statusText);
 }
 

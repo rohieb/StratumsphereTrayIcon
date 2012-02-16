@@ -55,6 +55,7 @@ class StratumsphereTrayIcon : public QObject {
 public:
   enum Status { UNDEFINED = 0, OPEN, CLOSED };
   Status status_;
+  QDateTime since_;
   
   StratumsphereTrayIcon();
   virtual ~StratumsphereTrayIcon();
