@@ -10,7 +10,7 @@ SOURCES = main.cpp
 HEADERS += main.h
 RESOURCES = resources.qrc
 win32 {
-  RC_FILE = s0trayicon.rc
+  RC_FILE = res/resources.rc
 }
 
 macx {
@@ -20,8 +20,8 @@ macx:universal {
   CONFIG += x86 ppc
 }
 macx:noicon {
-  QMAKE_INFO_PLIST = Info-noicon.plist
+  QMAKE_INFO_PLIST = res/Info-noicon.plist
 }
 macx:!noicon {
-  QMAKE_INFO_PLIST = Info-icon.plist
+  QMAKE_INFO_PLIST = res/Info-icon.plist
 }
