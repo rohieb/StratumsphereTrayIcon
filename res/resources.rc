@@ -1,2 +1,38 @@
+#define APSTUDIO_READONLY_SYMBOLS
+#include "afxres.h"
+#undef APSTUDIO_READONLY_SYMBOLS
+
+// Icon
 STRATUMSPHERE_ICON               ICON    DISCARDABLE     "res/s0trayicon.ico"
 
+// Version Info
+ VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,5
+ PRODUCTVERSION 0,5
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x0L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "FileDescription", "An application to show the opening status of the Stratum 0 hackerspace in your system tray icon."
+            VALUE "FileVersion", "0.5"
+            VALUE "LegalCopyright", "Copyright (C) 2012 rohieb, DooMMasteR, bluebrother"
+            VALUE "ProductName", "StratumsphereTrayIcon"
+            VALUE "ProductVersion", "0.5"
+            VALUE "OriginalFilename", "s0trayicon.exe"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200
+    END
+END
