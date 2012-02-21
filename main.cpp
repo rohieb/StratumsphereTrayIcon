@@ -184,8 +184,8 @@ void StratumsphereTrayIcon::refresh() {
       trayIcon_->showMessage(statusText, balloonText);
     }
 #endif // HAVE_DBUS
-    lastStatus_ = status_;
   }
+  lastStatus_ = status_;
 }
 
 /******************************************************************************/
