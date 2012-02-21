@@ -19,10 +19,13 @@
  * with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-//#include "dbus.h"
+#include "dbus.h"
+#include "globals.h"
 #include <QtDBus>
 #include <QCoreApplication>
 #include <QImage>
+
+using namespace StratumsphereTrayIcon;
 
 /**
  * main
@@ -30,30 +33,45 @@
 int main(int argc, char ** argv) {
 
   QCoreApplication app(argc, argv);
+  showNotification("Space is now open", "The Stratumsphere has just opened!",
+    QImage(":res/open-128.png"));
+  app.processEvents();
+  showNotification("Space is now closed", "The Stratumsphere has just closed.",
+    QImage(":res/closed-128.png"));
+  app.processEvents();
+  return 0;
+}
+
+/**
+ * Show a notification using the org.freedesktop.Notification service
+ * @param summary Summary, should be a short string to summarize the
+ *  notification
+ * @param text The text of the notification
+ * @param image Additional image to show among the notification
+ */
+void StratumsphereTrayIcon::showNotification(const QString summary, 
+  const QString text, const QImage image = QImage()) {
 
   qDBusRegisterMetaType<QImage>();
 
   QVariantMap hints;
-  hints["image_data"] = QImage(":res/open-128.png");
+  hints["image_data"] = image;
   QList<QVariant> argumentList;
-  argumentList << "AppName"; //app_name
+  argumentList << APPNAME; //app_name
   argumentList << (uint)0;  // replace_id
   argumentList << "";  // app_icon
-  argumentList << "Summary"; // summary
-  argumentList << "Body Text."; // body
+  argumentList << summary; // summary
+  argumentList << text; // body
   argumentList << QStringList();  // actions
   argumentList << hints;  // hints
-  argumentList << (int)1000; // timeout
+  argumentList << (int)5000; // timeout in ms
 
-  QDBusInterface notifyApp("org.freedesktop.Notifications",
+  static QDBusInterface notifyApp("org.freedesktop.Notifications",
     "/org/freedesktop/Notifications", "org.freedesktop.Notifications");
   QDBusReply<int> reply = notifyApp.callWithArgumentList(QDBus::AutoDetect,
     "Notify", argumentList);
   qDebug() << "Reply:" << reply;
   qDebug() << "Error:" << notifyApp.lastError();
-
-  app.processEvents();
-  return 0;
 }
 
 /**
