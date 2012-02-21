@@ -13,3 +13,7 @@ or, if you are using MS Visual C++:
 Windows compatibility has not yet been tested by me, though some users report
 that it works too.
 
+Versioning Scheme:
+The version number is calculated by the formula 1-1/(2^n), where n is
+incremented with each release. This way, the version number approaches 1 as n
+approaches infinity.
