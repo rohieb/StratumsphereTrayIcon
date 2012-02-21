@@ -163,7 +163,7 @@ void StratumsphereTrayIcon::refresh() {
   // set tool tip
   QString toolTipText = statusText;
   toolTipText.append("\n");
-  toolTipText.append(tr("Open since: %1").
+  toolTipText.append(tr("Status since: %1").
     arg(since_.toString(Qt::DefaultLocaleShortDate)));
   toolTipText.append("\n");
   toolTipText.append(tr("Last update: %1").
