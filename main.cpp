@@ -176,7 +176,10 @@ void StratumsphereTrayIcon::refresh() {
   trayIcon_->setToolTip(toolTipText);
 
   // set balloon message
-  if(lastStatus_ != status_ && status_ != StratumsphereTrayIcon::UNDEFINED) {
+  static bool firstTime = true; // don't show at program start
+  if(!firstTime && lastStatus_ != status_ &&
+    status_ != StratumsphereTrayIcon::UNDEFINED) {
+
 #ifdef HAVE_DBUS
     showNotification(statusText, balloonText, icon->pixmap(128).toImage());
 #else // HAVE_DBUS
@@ -185,6 +188,7 @@ void StratumsphereTrayIcon::refresh() {
     }
 #endif // HAVE_DBUS
   }
+  firstTime = false;
   lastStatus_ = status_;
 }
 
