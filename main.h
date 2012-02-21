@@ -29,6 +29,7 @@
 #include <QIcon>
 #include <QMenu>
 #include <QDateTime>
+#include <QTimer>
 
 class StratumsphereTrayIcon : public QObject {
   Q_OBJECT
@@ -63,11 +64,13 @@ public:
 
 protected:
   Status lastStatus_;
+  QTimer * timeoutTimer_;
 
 public slots:
   void updateStatus();
 protected slots:
   void reply(QNetworkReply*);
   void refresh();
+  void timeout();
 };
 

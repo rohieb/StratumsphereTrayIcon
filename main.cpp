@@ -43,7 +43,8 @@
  * Constructive constructor takes no parameters.
  */
 StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
-  trayMenu_(0), trayIcon_(0), status_(UNDEFINED), lastStatus_(UNDEFINED) {
+  trayMenu_(0), trayIcon_(0), status_(UNDEFINED), lastStatus_(UNDEFINED),
+  timeoutTimer_(0) {
   nam_ = new QNetworkAccessManager(this);
   connect(nam_, SIGNAL(finished(QNetworkReply*)), this,
     SLOT(reply(QNetworkReply*)));
@@ -75,6 +76,10 @@ StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   // fire up a timer to poll the status every n minutes
   startTimer(updateInterval_ * 1000);
 
+  // also set up the timeout timer
+  timeoutTimer_ = new QTimer(this);
+  connect(timeoutTimer_, SIGNAL(timeout()), this, SLOT(timeout()));
+
   updateStatus();
 }
 
@@ -97,8 +102,17 @@ void StratumsphereTrayIcon::updateStatus() {
   nam_->get(QNetworkRequest(QUrl("http://rohieb.name/stratum0/status.txt")));
 
   // after timeout, just update icon to unspecified state
+  timeoutTimer_->start(timeoutInterval_ * 1000);
+}
+
+/**
+ * Called when the timeout timer fires. Sets the state to undefined and
+ * redraws the tray icon.
+ */
+void StratumsphereTrayIcon::timeout() {
+  qDebug() << "Uh-oh! Timeout!";
   status_ = UNDEFINED;
-  QTimer::singleShot(timeoutInterval_ * 1000, this, SLOT(refresh()));
+  refresh();
 }
 
 /**
@@ -106,6 +120,7 @@ void StratumsphereTrayIcon::updateStatus() {
  */
 void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
   qDebug() << "got a reply!";
+  timeoutTimer_->stop(); // we don't want the timeout to mess up the balloons
 
   QStringList lines = QString(nr->readAll()).split('\n');
   foreach(const QString& l, lines) {
