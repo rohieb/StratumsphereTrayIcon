@@ -159,7 +159,7 @@ void StratumsphereTrayIcon::refresh() {
   qApp->setWindowIcon(*icon);
 
   statusText.append("\n");
-  statusText.append(tr("Open since: %1").
+  statusText.append(tr("Status since: %1").
     arg(since_.toString(Qt::DefaultLocaleShortDate)));
   statusText.append("\n");
   statusText.append(tr("Last update: %1").
