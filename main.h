@@ -62,9 +62,14 @@ public:
   StratumsphereTrayIcon();
   virtual ~StratumsphereTrayIcon();
 
+  inline void setNotifications(bool b) {
+    toggleNotifyAction_->setChecked(b);
+  }
+
 protected:
   Status lastStatus_;
   QTimer * timeoutTimer_;
+  QAction * toggleNotifyAction_;
 
 public slots:
   void updateStatus();

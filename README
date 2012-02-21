@@ -10,6 +10,9 @@ Compiling:
 or, if you are using MS Visual C++:
   qmake main.pro && nmake
 
+By default, a notification is shown when the opening status changes. If you do
+not want that, you can start the program with the --silent or -s option.
+
 Windows compatibility has not yet been tested by me, though some users report
 that it works too.
 

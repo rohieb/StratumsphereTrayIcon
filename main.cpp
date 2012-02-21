@@ -44,7 +44,7 @@
  */
 StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   trayMenu_(0), trayIcon_(0), status_(UNDEFINED), lastStatus_(UNDEFINED),
-  timeoutTimer_(0) {
+  timeoutTimer_(0), toggleNotifyAction_(0) {
   nam_ = new QNetworkAccessManager(this);
   connect(nam_, SIGNAL(finished(QNetworkReply*)), this,
     SLOT(reply(QNetworkReply*)));
@@ -59,6 +59,12 @@ StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
 
   // set up menu
   trayMenu_ = new QMenu;
+
+  toggleNotifyAction_ = new QAction(tr("Show &notifications"), this);
+  toggleNotifyAction_->setCheckable(true);
+  toggleNotifyAction_->setChecked(true);
+  trayMenu_->addAction(toggleNotifyAction_);
+
   updateAction_ = new QAction(tr("&Update status"), trayMenu_);
   connect(updateAction_, SIGNAL(triggered()), this, SLOT(updateStatus()));
   trayMenu_->addAction(updateAction_);
@@ -192,7 +198,7 @@ void StratumsphereTrayIcon::refresh() {
 
   // set balloon message
   static bool firstTime = true; // don't show at program start
-  if(!firstTime && lastStatus_ != status_ &&
+  if(toggleNotifyAction_->isChecked() && !firstTime && lastStatus_ != status_ &&
     status_ != StratumsphereTrayIcon::UNDEFINED) {
 
 #ifdef HAVE_DBUS
@@ -215,6 +221,12 @@ int main(int argc, char * argv[]) {
   QApplication app(argc, argv);
   QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
   StratumsphereTrayIcon * sti = new StratumsphereTrayIcon;
+
+  // parse arguments
+  QStringList args = app.arguments();
+  if(args.contains("--silent") || args.contains("-s")) {
+    sti->setNotifications(false);
+  }
 
   int ret = app.exec();
 
