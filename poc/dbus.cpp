@@ -1,12 +1,40 @@
+/**
+ * @file dbus.cpp Routines to handle D-Bus communication
+ * @date 2012-05-07
+ * @author Roland Hieber <rohieb@rohieb.name>
+ *
+ * Copyright (C) 2012 Roland Hieber <rohieb@rohieb.name>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
+
 //#include "dbus.h"
 #include <QtDBus>
 #include <QCoreApplication>
 #include <QImage>
 
+/**
+ * main
+ */
 int main(int argc, char ** argv) {
 
   QCoreApplication app(argc, argv);
- 
+
+  qDBusRegisterMetaType<QImage>();
+
+  QVariantMap hints;
+  hints["image_data"] = QImage(":res/open-128.png");
   QList<QVariant> argumentList;
   argumentList << "AppName"; //app_name
   argumentList << (uint)0;  // replace_id
@@ -14,19 +42,13 @@ int main(int argc, char ** argv) {
   argumentList << "Summary"; // summary
   argumentList << "Body Text."; // body
   argumentList << QStringList();  // actions
-//  argumentList << QList<QMap<QString,QDBusVariant> >();  // hints
-//  argumentList << QStringList();  // hints
-//  argumentList << hints;  // hints
-  argumentList << QVariantMap();  // hints
+  argumentList << hints;  // hints
   argumentList << (int)1000; // timeout
 
-  QDBusInterface notifyApp("org.freedesktop.Notifications", 
+  QDBusInterface notifyApp("org.freedesktop.Notifications",
     "/org/freedesktop/Notifications", "org.freedesktop.Notifications");
   QDBusReply<int> reply = notifyApp.callWithArgumentList(QDBus::AutoDetect,
     "Notify", argumentList);
-//  QDBusReply<int> reply = notifyApp.call(QDBus::AutoDetect, "Notify",
-//    "AppName", 0, "", "summ", "bdy", QStringList(), 
-//    QList<QMap<QString,QDBusVariant> >(), 10000);
   qDebug() << "Reply:" << reply;
   qDebug() << "Error:" << notifyApp.lastError();
 
@@ -34,4 +56,60 @@ int main(int argc, char ** argv) {
   return 0;
 }
 
+/**
+ * Automatic marshaling of a QImage for org.freedesktop.Notifications.Notify
+ *
+ * This function is from the Clementine project (see
+ * http://www.clementine-player.org) and licensed under the GNU General Public
+ * License, version 3 or later.
+ *
+ * Copyright 2010, David Sansome <me@davidsansome.com>
+ */
+QDBusArgument& operator<<(QDBusArgument& arg, const QImage& image) {
+  if(image.isNull()) {
+    arg.beginStructure();
+    arg << 0 << 0 << 0 << false << 0 << 0 << QByteArray();
+    arg.endStructure();
+    return arg;
+  }
+
+  QImage scaled = image.scaledToHeight(100, Qt::SmoothTransformation);
+  scaled = scaled.convertToFormat(QImage::Format_ARGB32);
+
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+  // ABGR -> ARGB
+  QImage i = scaled.rgbSwapped();
+#else
+  // ABGR -> GBAR
+  QImage i(scaled.size(), scaled.format());
+  for (int y = 0; y < i.height(); ++y) {
+    QRgb* p = (QRgb*) scaled.scanLine(y);
+    QRgb* q = (QRgb*) i.scanLine(y);
+    QRgb* end = p + scaled.width();
+    while (p < end) {
+      *q = qRgba(qGreen(*p), qBlue(*p), qAlpha(*p), qRed(*p));
+      p++;
+      q++;
+    }
+  }
+#endif
+
+  arg.beginStructure();
+  arg << i.width();
+  arg << i.height();
+  arg << i.bytesPerLine();
+  arg << i.hasAlphaChannel();
+  int channels = i.isGrayscale() ? 1 : (i.hasAlphaChannel() ? 4 : 3);
+  arg << i.depth() / channels;
+  arg << channels;
+  arg << QByteArray(reinterpret_cast<const char*>(i.bits()), i.numBytes());
+  arg.endStructure();
+  return arg;
+}
+
+const QDBusArgument& operator>>(const QDBusArgument& arg, QImage& image) {
+  // This is needed to link but shouldn't be called.
+  Q_ASSERT(0);
+  return arg;
+}
 // vim: set tw=80 et sw=2 ts=2:
