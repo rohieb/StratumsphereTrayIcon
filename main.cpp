@@ -38,7 +38,7 @@
  * Constructive constructor takes no parameters.
  */
 StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
-  trayMenu_(0), trayIcon_(0), status_(UNDEFINED) {
+  trayMenu_(0), trayIcon_(0), status_(UNDEFINED), lastStatus_(UNDEFINED) {
   nam_ = new QNetworkAccessManager(this);
   connect(nam_, SIGNAL(finished(QNetworkReply*)), this,
     SLOT(reply(QNetworkReply*)));
@@ -143,14 +143,16 @@ void StratumsphereTrayIcon::refresh() {
   updateAction_->setEnabled(true);
   updateAction_->setText(tr("&Update status"));
 
-  QString statusText;
+  QString statusText, balloonText;
   QIcon * icon;
   if(status_ == StratumsphereTrayIcon::CLOSED) {
     icon = &closedIcon_;
     statusText = tr("Space is closed");
+    balloonText = tr("The Stratumsphere has just closed.");
   } else if(status_ == StratumsphereTrayIcon::OPEN) {
     icon = &openIcon_;
     statusText = tr("Space is open");
+    balloonText = tr("The Stratumsphere has just opened!");
   } else {
     icon = &undefinedIcon_;
     statusText = tr("Could not determine opening status");
@@ -158,13 +160,23 @@ void StratumsphereTrayIcon::refresh() {
   trayIcon_->setIcon(*icon);
   qApp->setWindowIcon(*icon);
 
-  statusText.append("\n");
-  statusText.append(tr("Open since: %1").
+  // set tool tip
+  QString toolTipText = statusText;
+  toolTipText.append("\n");
+  toolTipText.append(tr("Open since: %1").
     arg(since_.toString(Qt::DefaultLocaleShortDate)));
-  statusText.append("\n");
-  statusText.append(tr("Last update: %1").
+  toolTipText.append("\n");
+  toolTipText.append(tr("Last update: %1").
     arg(lastUpdate_.toString(Qt::DefaultLocaleShortDate)));
-  trayIcon_->setToolTip(statusText);
+  trayIcon_->setToolTip(toolTipText);
+
+  // set balloon message
+  if(lastStatus_ != status_ && status_ != StratumsphereTrayIcon::UNDEFINED) {
+    if(QSystemTrayIcon::supportsMessages()) {
+      trayIcon_->showMessage(statusText, balloonText);
+    }
+    lastStatus_ = status_;
+  }
 }
 
 /******************************************************************************/
@@ -177,7 +189,7 @@ int main(int argc, char * argv[]) {
   StratumsphereTrayIcon * sti = new StratumsphereTrayIcon;
 
   int ret = app.exec();
-  
+
   delete sti;
   return ret;
 }
