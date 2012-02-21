@@ -1,0 +1,20 @@
+2012-02-21 Roland Hieber <rohieb@rohieb.name>
+ * v0.875
+ * show notification popups when opening status changes
+   To disable this feature, toggle "Show notifications" in the context menu, or
+	 start the program with the -s or --silent option.
+ * update license to GPLv3 or later
+ * fix some smaller bugs
+
+2012-02-17 Roland Hieber <rohieb@rohieb.name>
+ * v0.75
+ * added Mac OS X and Windows icons
+ * show last opening/closing time in popup
+ * Mac OS X: add option to build as universal binary
+ * Mac OS X: add option to build with dock icon hidden
+ * Windows: add file version block
+
+2012-02-09 Roland Hieber <rohieb@rohieb.name>
+ * v0.5
+ * Initial release
+
