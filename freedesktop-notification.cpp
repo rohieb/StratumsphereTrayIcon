@@ -19,28 +19,12 @@
  * with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "dbus.h"
+#ifdef HAVE_DBUS
+
+#include "freedesktop-notification.h"
 #include "globals.h"
 #include <QtDBus>
-#include <QCoreApplication>
 #include <QImage>
-
-using namespace StratumsphereTrayIcon;
-
-/**
- * main
- */
-int main(int argc, char ** argv) {
-
-  QCoreApplication app(argc, argv);
-  showNotification("Space is now open", "The Stratumsphere has just opened!",
-    QImage(":res/open-128.png"));
-  app.processEvents();
-  showNotification("Space is now closed", "The Stratumsphere has just closed.",
-    QImage(":res/closed-128.png"));
-  app.processEvents();
-  return 0;
-}
 
 /**
  * Show a notification using the org.freedesktop.Notification service
@@ -49,7 +33,7 @@ int main(int argc, char ** argv) {
  * @param text The text of the notification
  * @param image Additional image to show among the notification
  */
-void StratumsphereTrayIcon::showNotification(const QString summary, 
+void showNotification(const QString summary,
   const QString text, const QImage image = QImage()) {
 
   qDBusRegisterMetaType<QImage>();
@@ -125,9 +109,12 @@ QDBusArgument& operator<<(QDBusArgument& arg, const QImage& image) {
   return arg;
 }
 
-const QDBusArgument& operator>>(const QDBusArgument& arg, QImage& image) {
+const QDBusArgument& operator>>(const QDBusArgument& arg, QImage&) {
   // This is needed to link but shouldn't be called.
   Q_ASSERT(0);
   return arg;
 }
+
+#endif // def HAVE_DBUS
+
 // vim: set tw=80 et sw=2 ts=2:

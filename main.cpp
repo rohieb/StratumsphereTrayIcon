@@ -35,6 +35,10 @@
 #include <QTextCodec>
 #include <QTimer>
 
+#ifdef HAVE_DBUS
+#include "freedesktop-notification.h"
+#endif // HAVE_DBUS
+
 /**
  * Constructive constructor takes no parameters.
  */
@@ -173,9 +177,13 @@ void StratumsphereTrayIcon::refresh() {
 
   // set balloon message
   if(lastStatus_ != status_ && status_ != StratumsphereTrayIcon::UNDEFINED) {
+#ifdef HAVE_DBUS
+    showNotification(statusText, balloonText, icon->pixmap(128).toImage());
+#else // HAVE_DBUS
     if(QSystemTrayIcon::supportsMessages()) {
       trayIcon_->showMessage(statusText, balloonText);
     }
+#endif // HAVE_DBUS
     lastStatus_ = status_;
   }
 }

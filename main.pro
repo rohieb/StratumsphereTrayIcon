@@ -9,6 +9,21 @@ QT += gui
 SOURCES = main.cpp
 HEADERS += main.h
 RESOURCES = resources.qrc
+
+unix {
+  PKG = $$system(pkg-config --libs QtDBus)
+  contains(PKG, -lQtDBus) {
+    message("QtDBus found, configuring for D-Bus")
+    QT += dbus
+    DEFINES += HAVE_DBUS
+    SOURCES += freedesktop-notification.cpp
+    HEADERS += freedesktop-notification.h
+  }
+  !contains(PKG, -lQtDBus) {
+    message("Configuring without D-Bus. No Notification Popup support.")
+  }
+}
+
 win32 {
   RC_FILE = res/resources.rc
 }
