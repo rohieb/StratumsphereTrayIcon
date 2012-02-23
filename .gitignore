@@ -2,3 +2,5 @@ s0trayicon
 Makefile*
 debug/
 release/
+qrc_resources.*
+moc_*

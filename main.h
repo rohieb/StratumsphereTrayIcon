@@ -68,6 +68,7 @@ public:
 
 protected:
   Status lastStatus_;
+  Status lastStatusBeforeUndefined_;
   QTimer * timeoutTimer_;
   QAction * toggleNotifyAction_;
 
@@ -77,5 +78,8 @@ protected slots:
   void reply(QNetworkReply*);
   void refresh();
   void timeout();
+#ifdef HAVE_DBUS
+  void networkStateChanged(uint);
+#endif //def HAVE_DBUS
 };
 

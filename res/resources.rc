@@ -7,8 +7,8 @@ STRATUMSPHERE_ICON               ICON    DISCARDABLE     "res/s0trayicon.ico"
 
 // Version Info
  VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,75
- PRODUCTVERSION 0,75
+ FILEVERSION 0,875
+ PRODUCTVERSION 0,875
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -24,10 +24,10 @@ BEGIN
         BLOCK "000004b0"
         BEGIN
             VALUE "FileDescription", "An application to show the opening status of the Stratum 0 hackerspace in your system tray icon."
-            VALUE "FileVersion", "0.75"
+            VALUE "FileVersion", "0.875"
             VALUE "LegalCopyright", "Copyright (C) 2012 rohieb, DooMMasteR, bluebrother"
             VALUE "ProductName", "StratumsphereTrayIcon"
-            VALUE "ProductVersion", "0.75"
+            VALUE "ProductVersion", "0.875"
             VALUE "OriginalFilename", "s0trayicon.exe"
         END
     END
