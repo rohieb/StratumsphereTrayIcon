@@ -45,9 +45,15 @@
 StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   trayMenu_(0), trayIcon_(0), status_(UNDEFINED), lastStatus_(UNDEFINED),
   timeoutTimer_(0), toggleNotifyAction_(0) {
+
+  // set up network communication stuff
   nam_ = new QNetworkAccessManager(this);
   connect(nam_, SIGNAL(finished(QNetworkReply*)), this,
     SLOT(reply(QNetworkReply*)));
+
+  ncm_ = new QNetworkConfigurationManager;
+  connect(ncm_, SIGNAL(onlineStateChanged(bool)), this,
+    SLOT(onlineStateChanged(bool)));
 
   // set up icons
   int sizes[] = {16, 22, 32, 64, 128, 256};
@@ -211,6 +217,20 @@ void StratumsphereTrayIcon::refresh() {
   }
   firstTime = false;
   lastStatus_ = status_;
+}
+
+/**
+ * Called when the online status changes
+ */
+void StratumsphereTrayIcon::onlineStateChanged(bool isOnline) {
+  qDebug() << "Online status changed, isOnline =" << isOnline;
+
+  if(isOnline) {
+    updateStatus();
+  } else {
+    status_ = UNDEFINED;
+    refresh();
+  }
 }
 
 /******************************************************************************/

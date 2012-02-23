@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QNetworkAccessManager>
+#include <QNetworkConfigurationManager>
 #include <QNetworkReply>
 #include <QSystemTrayIcon>
 #include <QIcon>
@@ -34,6 +35,7 @@
 class StratumsphereTrayIcon : public QObject {
   Q_OBJECT
   QNetworkAccessManager * nam_;
+  QNetworkConfigurationManager * ncm_; 
   QMenu * trayMenu_;
   QAction * updateAction_;
   QSystemTrayIcon * trayIcon_;
@@ -77,5 +79,6 @@ protected slots:
   void reply(QNetworkReply*);
   void refresh();
   void timeout();
+  void onlineStateChanged(bool);
 };
 
