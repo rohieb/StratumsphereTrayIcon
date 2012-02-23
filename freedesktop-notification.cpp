@@ -33,7 +33,7 @@
  * @param text The text of the notification
  * @param image Additional image to show among the notification
  */
-void showNotification(const QString summary,
+bool showNotification(const QString summary,
   const QString text, const QImage image = QImage()) {
 
   qDBusRegisterMetaType<QImage>();
@@ -52,10 +52,13 @@ void showNotification(const QString summary,
 
   static QDBusInterface notifyApp("org.freedesktop.Notifications",
     "/org/freedesktop/Notifications", "org.freedesktop.Notifications");
-  QDBusReply<int> reply = notifyApp.callWithArgumentList(QDBus::AutoDetect,
+  QDBusMessage reply = notifyApp.callWithArgumentList(QDBus::AutoDetect,
     "Notify", argumentList);
-  qDebug() << "Reply:" << reply;
-  qDebug() << "Error:" << notifyApp.lastError();
+  if(reply.type() == QDBusMessage::ErrorMessage) {
+    qDebug() << "D-Bus Error:" << reply.errorMessage();
+    return false;
+  }
+  return true;
 }
 
 /**

@@ -5,7 +5,7 @@
 #include <QImage>
 #include <QtDBus>
 
-void showNotification(const QString summary, const QString text,
+bool showNotification(const QString summary, const QString text,
   const QImage image);
 
 QDBusArgument& operator<<(QDBusArgument& arg, const QImage& image);

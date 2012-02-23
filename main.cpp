@@ -201,13 +201,20 @@ void StratumsphereTrayIcon::refresh() {
   if(toggleNotifyAction_->isChecked() && !firstTime && lastStatus_ != status_ &&
     status_ != StratumsphereTrayIcon::UNDEFINED) {
 
+    // show tray icon message only if freedesktop notification fails
+    bool notificationShown = false;
 #ifdef HAVE_DBUS
-    showNotification(statusText, balloonText, icon->pixmap(128).toImage());
-#else // HAVE_DBUS
-    if(QSystemTrayIcon::supportsMessages()) {
-      trayIcon_->showMessage(statusText, balloonText);
-    }
+    notificationShown = showNotification(statusText, balloonText,
+      icon->pixmap(128).toImage());
 #endif // HAVE_DBUS
+    if(QSystemTrayIcon::supportsMessages()) {
+      if(!notificationShown) {
+        trayIcon_->showMessage(statusText, balloonText);
+      }
+    } else {
+      qDebug() << "It seems your system does not support "
+        "QSystemTrayIcon::showMessage(). That's too bad.";
+    }
   }
   firstTime = false;
   lastStatus_ = status_;
