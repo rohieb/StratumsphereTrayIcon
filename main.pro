@@ -1,11 +1,7 @@
 TEMPLATE = app
-CONFIG += debug_and_release \
-  ordered \
-  silent
+CONFIG += debug_and_release ordered
 TARGET = s0trayicon
-QT += network
-QT += core
-QT += gui
+QT += network core gui
 SOURCES = main.cpp
 HEADERS += main.h
 RESOURCES = resources.qrc
@@ -13,14 +9,16 @@ RESOURCES = resources.qrc
 unix {
   PKG = $$system(pkg-config --libs QtDBus)
   contains(PKG, -lQtDBus) {
-    message("QtDBus found, configuring for D-Bus")
+    message( \
+      "QtDBus found, configuring with NetworkManager and Notification support")
     QT += dbus
     DEFINES += HAVE_DBUS
     SOURCES += freedesktop-notification.cpp
     HEADERS += freedesktop-notification.h
   }
   !contains(PKG, -lQtDBus) {
-    message("Configuring without D-Bus. No Notification Popup support.")
+    message( \
+      "Configuring without D-Bus. No Notification and NetworkManager support.")
   }
 }
 

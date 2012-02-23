@@ -37,6 +37,7 @@
 
 #ifdef HAVE_DBUS
 #include "freedesktop-notification.h"
+#include <QDBusConnection>
 #endif // HAVE_DBUS
 
 /**
@@ -45,9 +46,23 @@
 StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   trayMenu_(0), trayIcon_(0), status_(UNDEFINED), lastStatus_(UNDEFINED),
   timeoutTimer_(0), toggleNotifyAction_(0) {
+
+  // set up network connection stuff
   nam_ = new QNetworkAccessManager(this);
   connect(nam_, SIGNAL(finished(QNetworkReply*)), this,
     SLOT(reply(QNetworkReply*)));
+
+#ifdef HAVE_DBUS
+  QDBusConnection conn = QDBusConnection::connectToBus(
+    QDBusConnection::SystemBus, "org.freedesktop.NetworkManager");
+  if(!conn.isConnected()) {
+    qDebug() << "Oh. Connection failed:" << conn.lastError();
+  } else {
+    conn.connect("org.freedesktop.NetworkManager",
+      "/org/freedesktop/NetworkManager", "org.freedesktop.NetworkManager",
+      "StateChanged", "u", this, SLOT(networkStateChanged(uint)));
+  }
+#endif // HAVE_DBUS
 
   // set up icons
   int sizes[] = {16, 22, 32, 64, 128, 256};
@@ -212,6 +227,35 @@ void StratumsphereTrayIcon::refresh() {
   firstTime = false;
   lastStatus_ = status_;
 }
+
+#ifdef HAVE_DBUS
+/**
+ * Called when NetworkManager changes its state
+ */
+void StratumsphereTrayIcon::networkStateChanged(uint state) {
+  QString stateRepr;
+  switch(state) {
+    // just ignore these, we don't know anything for sure
+    case 0: break; // NM_STATE_UNKNOWN
+    case 1: break; // NM_STATE_ASLEEP
+    case 2: break; // NM_STATE_CONNECTING
+    case 3: // NM_STATE_CONNECTED
+      qDebug() << "NetworkManager state changed to connected";
+      updateStatus();
+      break;
+    case 4: // NM_STATE_DISCONNECTED
+      qDebug() << "NetworkManager state changed to disconnected";
+      status_ = UNDEFINED;
+      refresh();
+      break;
+    default:
+      qDebug() << "NetworkManager state changed to an undefined state o_O" <<
+        "(this should not happen!)";
+      break;
+  }
+}
+#endif // def HAVE_DBUS
+
 
 /******************************************************************************/
 /* main function                                                              */

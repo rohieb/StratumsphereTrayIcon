@@ -77,5 +77,8 @@ protected slots:
   void reply(QNetworkReply*);
   void refresh();
   void timeout();
+#ifdef HAVE_DBUS
+  void networkStateChanged(uint);
+#endif //def HAVE_DBUS
 };
 
