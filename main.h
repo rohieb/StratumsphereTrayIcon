@@ -68,6 +68,7 @@ public:
 
 protected:
   Status lastStatus_;
+  Status lastStatusBeforeUndefined_;
   QTimer * timeoutTimer_;
   QAction * toggleNotifyAction_;
 

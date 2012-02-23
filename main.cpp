@@ -45,7 +45,8 @@
  */
 StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   trayMenu_(0), trayIcon_(0), status_(UNDEFINED), lastStatus_(UNDEFINED),
-  timeoutTimer_(0), toggleNotifyAction_(0) {
+  lastStatusBeforeUndefined_(UNDEFINED), timeoutTimer_(0),
+  toggleNotifyAction_(0) {
 
   // set up network connection stuff
   nam_ = new QNetworkAccessManager(this);
@@ -186,11 +187,11 @@ void StratumsphereTrayIcon::refresh() {
 
   QString statusText, balloonText;
   QIcon * icon;
-  if(status_ == StratumsphereTrayIcon::CLOSED) {
+  if(status_ == CLOSED) {
     icon = &closedIcon_;
     statusText = tr("Space is closed");
     balloonText = tr("The Stratumsphere has just closed.");
-  } else if(status_ == StratumsphereTrayIcon::OPEN) {
+  } else if(status_ == OPEN) {
     icon = &openIcon_;
     statusText = tr("Space is open");
     balloonText = tr("The Stratumsphere has just opened!");
@@ -214,7 +215,8 @@ void StratumsphereTrayIcon::refresh() {
   // set balloon message
   static bool firstTime = true; // don't show at program start
   if(toggleNotifyAction_->isChecked() && !firstTime && lastStatus_ != status_ &&
-    status_ != StratumsphereTrayIcon::UNDEFINED) {
+    lastStatusBeforeUndefined_ != status_ &&  // don't re-show after net loss
+    status_ != UNDEFINED) {
 
 #ifdef HAVE_DBUS
     showNotification(statusText, balloonText, icon->pixmap(128).toImage());
@@ -225,6 +227,10 @@ void StratumsphereTrayIcon::refresh() {
 #endif // HAVE_DBUS
   }
   firstTime = false;
+  if(status_ == UNDEFINED && lastStatus_ != UNDEFINED) {
+    qDebug() << "saving last before undefined status:" << lastStatus_;
+    lastStatusBeforeUndefined_ = lastStatus_;
+  }
   lastStatus_ = status_;
 }
 
