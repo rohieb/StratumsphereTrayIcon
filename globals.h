@@ -22,3 +22,4 @@
 #include <QString>
 
 const QString APPNAME("Stratumsphere Tray Icon");
+const QString VERSION("0.9375");
