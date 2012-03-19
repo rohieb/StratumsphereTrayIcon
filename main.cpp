@@ -224,13 +224,13 @@ void StratumsphereTrayIcon::refresh() {
     notificationShown = showNotification(statusText, balloonText,
       icon->pixmap(128).toImage());
 #endif // HAVE_DBUS
-    if(QSystemTrayIcon::supportsMessages()) {
-      if(!notificationShown) {
+    if(!notificationShown) {
+      if(QSystemTrayIcon::supportsMessages()) {
         trayIcon_->showMessage(statusText, balloonText);
+      } else {
+        qDebug() << "It seems your system does not support "
+          "QSystemTrayIcon::showMessage(). That's too bad.";
       }
-    } else {
-      qDebug() << "It seems your system does not support "
-        "QSystemTrayIcon::showMessage(). That's too bad.";
     }
     firstTime = false;
   }
