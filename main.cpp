@@ -232,8 +232,8 @@ void StratumsphereTrayIcon::refresh() {
           "QSystemTrayIcon::showMessage(). That's too bad.";
       }
     }
-    firstTime = false;
   }
+  firstTime = false;
   if(status_ == UNDEFINED && lastStatus_ != UNDEFINED) {
     qDebug() << "saving last before undefined status:" << lastStatus_;
     lastStatusBeforeUndefined_ = lastStatus_;
