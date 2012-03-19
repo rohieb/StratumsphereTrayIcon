@@ -155,7 +155,7 @@ void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
         qDebug() << "space is open";
       } else if(boolPart.toLower() == "false") {
         status_ = CLOSED;
-        qDebug() << "space is open";
+        qDebug() << "space is closed";
       } else {
         qDebug() << "Oops, I don't know how to interpret that line:" << line;
         status_ = UNDEFINED;
