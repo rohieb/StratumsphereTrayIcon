@@ -3,7 +3,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 // Icon
-STRATUMSPHERE_ICON               ICON    DISCARDABLE     "res/s0trayicon.ico"
+STRATUMSPHERE_ICON               ICON    DISCARDABLE     "s0trayicon.ico"
 
 // Version Info
  VS_VERSION_INFO VERSIONINFO
