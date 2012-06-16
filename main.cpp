@@ -121,7 +121,9 @@ void StratumsphereTrayIcon::updateStatus() {
   qDebug() << QDateTime::currentDateTime().toString() << "updating status";
   updateAction_->setText(tr("Updating…"));
   updateAction_->setEnabled(false);
-  nam_->get(QNetworkRequest(QUrl("http://rohieb.name/stratum0/status.txt")));
+  QString url("http://status.stratum0.org/status.txt");
+  qDebug() << "fetching" << url;
+  nam_->get(QNetworkRequest(QUrl(url)));
 
   // after timeout, just update icon to unspecified state
   timeoutTimer_->start(timeoutInterval_ * 1000);
