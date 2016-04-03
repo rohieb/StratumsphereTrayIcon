@@ -121,7 +121,7 @@ void StratumsphereTrayIcon::updateStatus() {
   qDebug() << QDateTime::currentDateTime().toString() << "updating status";
   updateAction_->setText(tr("Updating…"));
   updateAction_->setEnabled(false);
-  QString url("http://status.stratum0.org/status.txt");
+  QString url("https://status.stratum0.org/status.txt");
   qDebug() << "fetching" << url;
   nam_->get(QNetworkRequest(QUrl(url)));
 
