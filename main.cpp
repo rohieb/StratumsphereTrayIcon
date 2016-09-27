@@ -67,7 +67,7 @@ StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
 
   // set up icons
   int sizes[] = {16, 22, 32, 64, 128, 256};
-  for(unsigned char size = 0, i = 0; i < sizeof(sizes); size = sizes[i], i++) {
+  for(const int size : sizes) {
     openIcon_.addFile(QString(":/res/open-%1.png").arg(size));
     closedIcon_.addFile(QString(":/res/closed-%1.png").arg(size));
     undefinedIcon_.addFile(QString(":/res/undefined-%1.png").arg(size));
