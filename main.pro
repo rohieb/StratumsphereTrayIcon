@@ -22,6 +22,11 @@ unix {
   }
 }
 
+CONFIG(release, debug|release) {
+    #This is a release build
+    DEFINES += QT_NO_DEBUG_OUTPUT
+}
+
 win32 {
   RC_FILE = res/resources.rc
 }
