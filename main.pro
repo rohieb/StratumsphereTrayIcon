@@ -1,10 +1,12 @@
 TEMPLATE = app
 CONFIG += debug_and_release ordered
-TARGET = s0trayicon
+TARGET = byteicon
 QT += network core gui widgets
 SOURCES = main.cpp
 HEADERS += main.h
 RESOURCES = resources.qrc
+
+QMAKE_CXXFLAGS += -std=c++11
 
 unix {
   PKG = $$system(pkg-config --libs QtDBus)
