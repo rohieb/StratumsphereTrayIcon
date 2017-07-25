@@ -1,5 +1,13 @@
-An application to show the opening status of the Stratum 0 hackerspace in the
+# BytespeicherTrayIcon
+[![Build Status](https://travis-ci.org/Bytespeicher/BytespeicherTrayIcon.svg?branch=master)](https://travis-ci.org/Bytespeicher/BytespeicherTrayIcon)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+An application to show the opening status of the bytespeicher in the
 system tray icon.
+
+Tested:
+ * Qt 5.7.1 on Windows 10
+ * Qt 5.5.1 on Linux Mint
+ * Qt 5.9.0 on Linux Mint
 
 Dependencies:
  * Qt >= 4.2 (http://qt.nokia.com)
