@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += debug_and_release ordered
 TARGET = s0trayicon
-QT += network core gui
+QT += network core gui widgets
 SOURCES = main.cpp
 HEADERS += main.h
 RESOURCES = resources.qrc
