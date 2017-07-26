@@ -12,6 +12,7 @@ install:
     - source /opt/qt*/bin/qt*-env.sh
 
 script:
+  - ls /home/travis/build/Bytespeicher/BytespeicherTrayIcon 
   - mkdir appdir appdir/usr appdir/usr/share appdir/usr/share/applications
   - cp  byteicon.desktop appdir/usr/share/applications
   - qmake PREFIX=/usr
