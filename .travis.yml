@@ -21,7 +21,8 @@ script:
   - chmod a+x linuxdeployqt*.AppImage
   - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
   - ls /home/travis/build/Bytespeicher/BytespeicherTrayIcon
-  - cp /home/travis/build/Bytespeicher/BytespeicherTrayIcon/byteicon appdir/usr/share appdir/usr/share/applications
+  - cp /home/travis/build/Bytespeicher/BytespeicherTrayIcon/byteicon appdir/usr/share/applications
+  - cp res/byteicon.png appdir/usr/share/applications
   - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/*.desktop -bundle-non-qt-libs
   - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/*.desktop -appimage
 
