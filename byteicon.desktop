@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Byteicon
+Name=byteicon
 Comment=Bytespeicher Status App
 Exec=byteicon %U
 Terminal=false
