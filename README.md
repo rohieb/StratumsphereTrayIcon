@@ -1,4 +1,4 @@
-# BytespeicherTrayIcon
+# BytespeicherTrayIcon ![alt text](res/open-32.png "BytespeicherTrayIcon")
 [![Build Status](https://travis-ci.org/Bytespeicher/BytespeicherTrayIcon.svg?branch=master)](https://travis-ci.org/Bytespeicher/BytespeicherTrayIcon)  
 
 An application to show the opening status of the bytespeicher in the
