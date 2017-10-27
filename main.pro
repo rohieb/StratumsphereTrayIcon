@@ -45,3 +45,5 @@ macx:noicon {
 macx:!noicon {
   QMAKE_INFO_PLIST = res/Info-icon.plist
 }
+
+TRANSLATIONS = lang/main_hi-IN.ts
