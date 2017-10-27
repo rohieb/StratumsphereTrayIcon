@@ -8,7 +8,8 @@ Tested:
  * Qt 5.7.1 on Windows 10
  * Qt 5.5.1 on Linux Mint
  * Qt 5.9.0 on Linux Mint
-
+ * Qt 5.9.1 on Linux Mint
+ 
 Dependencies:
  * Qt >= 4.2 (http://qt.nokia.com)
  * A C++ build system (GCC/GNU make or MS Visual C++ Express will do)
