@@ -34,6 +34,9 @@
 #include <QDebug>
 #include <QTextCodec>
 #include <QTimer>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonValue>
 
 #ifdef HAVE_DBUS
 #include "freedesktop-notification.h"
@@ -102,6 +105,7 @@ StratumsphereTrayIcon::StratumsphereTrayIcon() : QObject(0), nam_(0),
   timeoutTimer_ = new QTimer(this);
   connect(timeoutTimer_, SIGNAL(timeout()), this, SLOT(timeout()));
 
+
   updateStatus();
 }
 
@@ -121,7 +125,7 @@ void StratumsphereTrayIcon::updateStatus() {
   qDebug() << QDateTime::currentDateTime().toString() << "updating status";
   updateAction_->setText(tr("Updating…"));
   updateAction_->setEnabled(false);
-  QString url("https://status.stratum0.org/status.txt");
+  QString url("https://status.bytespeicher.org/status.json");
   qDebug() << "fetching" << url;
   nam_->get(QNetworkRequest(QUrl(url)));
 
@@ -146,35 +150,36 @@ void StratumsphereTrayIcon::reply(QNetworkReply* nr) {
   qDebug() << "got a reply!";
   timeoutTimer_->stop(); // we don't want the timeout to mess up the balloons
 
-  QStringList lines = QString(nr->readAll()).split('\n');
-  foreach(const QString& l, lines) {
-    QString line = l.trimmed();
-    qDebug() << "parsing line:" << line;
-    if(line.startsWith("IsOpen:")) {
-      QString boolPart = line.section(':', 1).trimmed();
-      if(boolPart.toLower() == "true") {
-        status_ = OPEN;
-        qDebug() << "space is open";
-      } else if(boolPart.toLower() == "false") {
-        status_ = CLOSED;
-        qDebug() << "space is closed";
-      } else {
-        qDebug() << "Oops, I don't know how to interpret that line:" << line;
-        status_ = UNDEFINED;
-      }
-      lastUpdate_ = QDateTime::currentDateTime();
-      qDebug() << "status is" << status_;
-    }
-    if(line.startsWith("Since:")) {
-      QDateTime dt = QDateTime::fromString(line.section(':', 1).trimmed(),
-        Qt::ISODate);
+  QString strReply = (QString)nr->readAll();
+  QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+  QJsonObject jsonObject = jsonResponse.object();
+
+  if(jsonObject["open"].toBool())
+  {
+      status_ = OPEN;
+      qDebug() << "space is open";
+  }
+  else
+  {
+      status_ = CLOSED;
+      qDebug() << "space is closed";
+  }
+  lastUpdate_ = QDateTime::currentDateTime();
+  qDebug() << "status is" << status_;
+
+  if(jsonObject["state"].isObject())
+  {
+      QJsonObject jsonStatObj = jsonObject["state"].toObject();
+      QDateTime dt;
+      dt.setTime_t(jsonStatObj["lastchange"].toInt());
+
       if(!dt.isValid()) {
-        qDebug() << "Oops, I don't know how to interpret that line:" << line;
+        qDebug() << "Oops, I don't know how to interpret timestamp.";
       } else {
         since_ = dt;
       }
-    }
   }
+
   nr->deleteLater();
   refresh();
 };
@@ -192,11 +197,11 @@ void StratumsphereTrayIcon::refresh() {
   if(status_ == CLOSED) {
     icon = &closedIcon_;
     statusText = tr("Space is closed");
-    balloonText = tr("The Stratumsphere has just closed.");
+    balloonText = tr("The Bytespeicher has just closed.");
   } else if(status_ == OPEN) {
     icon = &openIcon_;
     statusText = tr("Space is open");
-    balloonText = tr("The Stratumsphere has just opened!");
+    balloonText = tr("The Bytespeicher has just opened!");
   } else {
     icon = &undefinedIcon_;
     statusText = tr("Could not determine opening status");
@@ -278,7 +283,7 @@ void StratumsphereTrayIcon::networkStateChanged(uint state) {
 
 int main(int argc, char * argv[]) {
   QApplication app(argc, argv);
-  QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+  //QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
   StratumsphereTrayIcon * sti = new StratumsphereTrayIcon;
 
   // parse arguments

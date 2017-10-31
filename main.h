@@ -22,10 +22,10 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QSystemTrayIcon>
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QSystemTrayIcon>
 #include <QIcon>
 #include <QMenu>
 #include <QDateTime>

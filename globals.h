@@ -21,5 +21,5 @@
 
 #include <QString>
 
-const QString APPNAME("Stratumsphere Tray Icon");
+const QString APPNAME("Bytespeicher Tray Icon");
 const QString VERSION("0.9375");

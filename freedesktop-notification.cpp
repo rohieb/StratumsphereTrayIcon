@@ -48,7 +48,7 @@ bool showNotification(const QString summary,
   argumentList << text; // body
   argumentList << QStringList();  // actions
   argumentList << hints;  // hints
-  argumentList << (int)5000; // timeout in ms
+  argumentList << (int)10000; // timeout in ms
 
   static QDBusInterface notifyApp("org.freedesktop.Notifications",
     "/org/freedesktop/Notifications", "org.freedesktop.Notifications");
@@ -107,7 +107,7 @@ QDBusArgument& operator<<(QDBusArgument& arg, const QImage& image) {
   int channels = i.isGrayscale() ? 1 : (i.hasAlphaChannel() ? 4 : 3);
   arg << i.depth() / channels;
   arg << channels;
-  arg << QByteArray(reinterpret_cast<const char*>(i.bits()), i.numBytes());
+  arg << QByteArray(reinterpret_cast<const char*>(i.bits()), i.byteCount());
   arg.endStructure();
   return arg;
 }

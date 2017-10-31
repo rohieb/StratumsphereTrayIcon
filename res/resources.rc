@@ -1,7 +1,3 @@
-#define APSTUDIO_READONLY_SYMBOLS
-#include "afxres.h"
-#undef APSTUDIO_READONLY_SYMBOLS
-
 // Icon
 STRATUMSPHERE_ICON               ICON    DISCARDABLE     "s0trayicon.ico"
 
@@ -23,12 +19,12 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "FileDescription", "An application to show the opening status of the Stratum 0 hackerspace in your system tray icon."
+            VALUE "FileDescription", "An application to show the opening status of the bytespeicher in your system tray icon."
             VALUE "FileVersion", "0.9375"
-            VALUE "LegalCopyright", "Copyright (C) 2012 rohieb, DooMMasteR, bluebrother"
-            VALUE "ProductName", "StratumsphereTrayIcon"
+            VALUE "LegalCopyright", "Copyright (C) 2012 rohieb, DooMMasteR, bluebrother, jurkov"
+            VALUE "ProductName", "ByteSpeicherTrayIcon"
             VALUE "ProductVersion", "0.9375"
-            VALUE "OriginalFilename", "s0trayicon.exe"
+            VALUE "OriginalFilename", "byteicon.exe"
         END
     END
     BLOCK "VarFileInfo"
